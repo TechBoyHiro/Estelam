@@ -31,7 +31,7 @@ class Staff(models.Model):
     load = models.IntegerField(default=0) # TODO: The number of estelam assigned to this staff
 
     def __str__(self):
-        return self.name + ' ** ' + self.staffcode + ' ** ' + self.section + ' ** ' + self.load
+        return self.name + ' ** ' + str(self.staffcode) + ' ** ' + self.section + ' ** ' + str(self.load)
 
 
 class Estelam(models.Model):
@@ -39,7 +39,7 @@ class Estelam(models.Model):
     staff = models.ForeignKey(Staff,on_delete=models.RESTRICT)
     issuedat = models.DateTimeField(default=datetime.now())
     description = models.TextField(blank=True,null=True)
-    trackingnumber = models.TextField(blank=True,null=True)
+    trackingnumber = models.CharField(max_length=7,blank=True,null=True)
 
     def __str__(self):
         return self.user.name + ' ** ' + str(self.issuedat)
@@ -61,7 +61,7 @@ class Status(models.Model):
     file = models.FileField(upload_to='statusfiles',blank=True,null=True)
 
     def __str__(self):
-        return 'estelam : ' + self.estelam.trackingnumber + ' ** ' + self.description
+        return 'estelam : ' + str(self.estelam.trackingnumber) + ' ** ' + self.description
 
 
 class Content(models.Model):
