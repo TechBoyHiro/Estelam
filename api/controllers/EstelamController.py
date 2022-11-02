@@ -126,3 +126,53 @@ def GetEstelamDetails(request):
             'code': '400',
             'data': 'دریافت استعلام با مشکل مواجه شد'
         }, encoder=JSONEncoder)
+
+
+@csrf_exempt
+@api_view(['POST'])
+def GetAllUserEstelams(request):
+    try:
+        data = json.loads(request.body)
+        check = Check(data, ['token'])
+        if not (check is True):
+            return check
+    except:
+        return JsonResponse({
+            'success': False,
+            'code': '400',
+            'data': 'ساختار ارسال داده درست نمیباشد'
+        }, encoder=JSONEncoder, status=400)
+    try:
+        token = data['token']
+        if ((token == "") | (token is None)):
+            return JsonResponse({
+                'success': False,
+                'code': '400',
+                'data': 'لطفا توکن کاربر را وارد کنید'
+            }, encoder=JSONEncoder, status=400)
+        user = Token.objects.filter(token=token).first().user
+        if not user:
+            return JsonResponse({
+                'success': False,
+                'code': '400',
+                'data': 'کاربر پیدا نشد'
+            }, encoder=JSONEncoder, status=400)
+        estelams = Estelam.objects.filter(user=user).all()
+        context = []
+        for estelam in estelams:
+            status = Status.objects.order_by('issuedat').first()
+            obj = EstelamLatestStatusSerializer(estelam, context={'staffname': status.staff.name, 'staffcode': status.staff.staffcode,
+                                                                  'status': status.description,
+                                                                  'statusissuedat': status.issuedat})
+            context.append(obj.data)
+        return JsonResponse({
+            'success': True,
+            'code': '200',
+            'data': context
+        }, encoder=JSONEncoder)
+    except:
+        return JsonResponse({
+            'success': False,
+            'code': '400',
+            'data': 'دریافت استعلام ها با مشکل مواجه شد'
+        }, encoder=JSONEncoder)

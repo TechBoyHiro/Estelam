@@ -52,3 +52,19 @@ class EstelamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Estelam
         fields = ('issuedat', 'description', 'trackingnumber', 'status')
+
+
+class EstelamUserGetSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField('get_username')
+    userphone = serializers.SerializerMethodField('get_userphone')
+
+    def get_status(self, user):
+        return self.context['username']
+
+    def get_status(self, user):
+        return self.context['userphone']
+
+
+    class Meta:
+        model = Estelam
+        fields = ('issuedat', 'description', 'trackingnumber', 'username', 'userphone')
