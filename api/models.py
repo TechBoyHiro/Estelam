@@ -74,4 +74,3 @@ class SMS(models.Model):
     phone = models.CharField(max_length=11)
     issued = models.DateTimeField(default=datetime.now())
     valid = models.DateTimeField(blank=True,null=True)
-

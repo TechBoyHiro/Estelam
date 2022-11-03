@@ -119,3 +119,52 @@ def GetStaffEstelams(request):
             'data': 'دریافت استعلام ها با مشکل مواجه شد'
         }, encoder=JSONEncoder)
 
+
+@csrf_exempt
+@api_view(['POST'])
+def StaffLogin(request):
+    try:
+        data = json.loads(request.body)
+        check = Check(data, ['staffcode','password'])
+        if not (check is True):
+            return check
+    except:
+        return JsonResponse({
+            'success': False,
+            'code': '400',
+            'data': 'ساختار ارسال داده درست نمیباشد'
+        }, encoder=JSONEncoder, status=400)
+    try:
+        staffcode = data['staffcode']
+        if ((staffcode == "") | (staffcode is None)):
+            return JsonResponse({
+                'success': False,
+                'code': '400',
+                'data': 'لطفا کد پرسنلی را وارد کنید'
+            }, encoder=JSONEncoder, status=400)
+        staff = Staff.objects.filter(staffcode=staffcode).first()
+        if not staff:
+            return JsonResponse({
+                'success': False,
+                'code': '400',
+                'data': 'پرسنل موجود نمیباشد'
+            }, encoder=JSONEncoder, status=400)
+        password = data['password']
+        if staff.password == password:
+            return JsonResponse({
+                'success': True,
+                'code': '200',
+                'data': True
+            }, encoder=JSONEncoder)
+        return JsonResponse({
+            'success': False,
+            'code': '404',
+            'data': 'رمز عبور اشتباه است'
+        }, encoder=JSONEncoder)
+    except:
+        return JsonResponse({
+            'success': False,
+            'code': '400',
+            'data': 'دریافت استعلام ها با مشکل مواجه شد'
+        }, encoder=JSONEncoder)
+
